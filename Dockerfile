@@ -11,12 +11,15 @@ RUN yum upgrade -y
 RUN yum install -y epel-release
 RUN yum install -y dnsdist
 
-## Copy the containers config file with basic settings that refer to recursor.d folder. 
+## Copy the containers config file with basic settings.
 COPY ./files/dnsdist.conf /etc/dnsdist/dnsdist.conf
 
 ## Expose the DNS ports 
 EXPOSE 53/tcp
 EXPOSE 53/udp
 
-## Run the pdns_recursor
-CMD [ "/bin/dnsdist" ]
+VOLUME "/etc/dnsdist/"
+
+## Run DNSDist
+ENTRYPOINT ["/bin/dnsdist", "--uid", "dnsdist", "--gid", "dnsdist"]
+CMD ["--supervised", "--disable-syslog"]
